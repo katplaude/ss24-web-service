@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Avatar creation tool</title>
+</head>
+<body>
+<h1>Avatar Creation Tool</h1>
+
+<form id="avatarForm" action="/create-avatar" method="post">
+    <label for="avatarName">Avatar's name:</label>
+    <input type="text" id="avatarName" name="avatarName"><br>
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age"><br>
+
+    <label for="skinColor">Skin color:</label>
+    <input type="color" id="skinColor" name="skinColor"><br>
+
+    <label for="hairstyle">Hairstyle:</label>
+    <select id="hairstyle" name="hairstyle">
+        <option value="long">Long</option>
+        <option value="short">Short</option>
+        <option value="bald">Bald</option>
+    </select><br>
+
+    <label for="headShape">Head shape:</label>
+    <select id="headShape" name="headShape" required>
+        <option value="round">Round</option>
+        <option value="square">Square</option>
+        <option value="oval">Oval</option>
+    </select><br>
+
+    <label for="upperClothing">Upper clothing:</label>
+    <select id="upperClothing" name="upperClothing" required>
+        <option value="t-shirt">T-shirt</option>
+        <option value="hoodie">Hoodie</option>
+        <option value="sweater">Sweater</option>
+        <option value="jumper">Jumper</option>
+    </select><br>
+
+    <label for="lowerClothing">Lower clothing:</label>
+    <select id="lowerClothing" name="lowerClothing" required>
+        <option value="jeans">Jeans</option>
+        <option value="pants">Pants</option>
+        <option value="shorts">Shorts</option>
+        <option value="skirt">Skirt</option>
+    </select><br>
+
+    <input type="submit" />
+</form>
+
+</body>
+</html>
