@@ -3,12 +3,8 @@ const path = require('path');
 const  {fileURLToPath}  =require('url');
 const fs = require("fs");
 const {response} = require("express");
-
-// if(import.meta.url){
-//     // if import.meta.url is set we override the nodejs globals __filename and __dirname
-//     __filename = fileURLToPath(import.meta.url);
-//     __dirname = path.dirname(__filename);
-// }
+const {v4: uuid} = require('uuid');
+const avatarSchema = require("./avatar.schema.js");
 
 // create the data file if it does not yet exist
 const data_file = path.join(process.cwd(),'avatars.json');
@@ -26,15 +22,17 @@ app.get('/', function (req, res) {
 
 app.post('/api/avatars', (req, res)=>{
     console.log(" POST /api/avatars")
-    let newAvatar = req.body
 
-    if(typeof newAvatar.childAge !== 'number'){
-        response.sendStatus(400)
+    const {error, value} = avatarSchema.validate(req.body);
+
+    if(error){
+        res.status(400).send(error)
+        return
     }
 
-    newAvatar = {
-        id: Date.now(),
-        ...newAvatar,
+    const newAvatar = {
+        id: uuid(),
+        ...value,
         createdAt: new Date(Date.now()).toISOString()
     }
 
@@ -55,7 +53,7 @@ app.get("/api/avatars", (req, res)=>{
 })
 
 app.get("/api/avatars/:id", (req, res)=>{
-    const avatarID = parseInt(req.params.id)
+    const avatarID = (req.params.id)
     console.log(` GET /api/avatars/:${avatarID}`)
     const avatarsArray =  JSON.parse(fs.readFileSync(data_file, "utf8"))
     const avatar = avatarsArray.find((av)=>av.id===avatarID)
@@ -67,6 +65,14 @@ app.get("/api/avatars/:id", (req, res)=>{
 
 app.put("/api/avatars/:id", async (req, res)=>{
     try {
+
+        const {error, value} = avatarSchema.validate(req.body, {abortEarly: false});
+
+        if(error){
+            res.status(400).send(error)
+            return
+        }
+
         const data = fs.readFileSync(data_file);
         const avatars = JSON.parse(data);
 
