@@ -106,5 +106,43 @@ describe('avatar api', () => {
     })
 
 
+    test('udpate avatar', async()=> {
+        const createResponse = await request(app)
+            .post('/api/avatars')
+            .send(TEST_DATA)
+            .set('Accept', 'application/json')
+            .expect(201);
+
+        expect(createResponse.body).toMatchObject(TEST_DATA);
+        expect(createResponse.body.id).toBeGreaterThan(0);
+        expect(createResponse.body.createdAt).toBeDefined();
+
+        const newAvatarId = createResponse.body.id;
+
+        const updatedData = {
+            ...TEST_DATA,
+            avatarName: "Markuss",
+            childAge: 12,
+            skinColor: "#0000ff",
+            hairstyle: "short",
+            headShape: "oval",
+            upperClothing: "jacket",
+            lowerClothing: "shorts"
+        };
+
+        const updateResponse = await request(app)
+            .put(`/api/avatars/${newAvatarId}`)
+            .send(updatedData)
+            .set('Accept', 'application/json')
+            .expect(204);
+
+        const getUpdatedResponse = await request(app)
+            .get(`/api/avatars/${newAvatarId}`)
+            .set('Accept', 'application/json')
+            .expect(200);
+
+        expect(getUpdatedResponse.body).toMatchObject(updatedData);
+
+    })
 
 });
