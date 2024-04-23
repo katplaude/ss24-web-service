@@ -65,7 +65,7 @@ describe('avatar api', () => {
         );
     });
 
-    test('create avatar requires at least avatar name and child\'s age', async () => {
+    test('create avatar requires at least avatar name and childs age', async () => {
 
         const testData = {
             "skinColor": "#0000ff",
@@ -80,6 +80,26 @@ describe('avatar api', () => {
             .send(testData)
             .set('Accept', 'application/json')
             .expect(400);
+    });
+
+    test('create avatar requires upperClothing to be dress', async () => {
+
+        const testData = {
+           avatarName: "Lara",
+            childAge: 6,
+            skinColor: "#0000ff",
+            hairstyle: "long",
+            headShape: "heart",
+            upperClothing: "dress",
+        }
+
+        const createResponse = await request(app)
+            .post('/api/avatars')
+            .send(testData)
+            .set('Accept', 'application/json')
+            .expect(400);
+
+        expect(createResponse.status).toBe(400);
     });
 
 });
