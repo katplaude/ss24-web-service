@@ -1,10 +1,10 @@
 {
   "name": "avatar-service",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "test": "jest",
-    "start": "node src/main.js",
-    "dev": "nodemon src/main.js"
+    "start": "node src/main.js"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",
@@ -16,9 +16,15 @@
     "supertest": "^6.3.4"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.19.2",
+    "express-session": "^1.18.0",
     "joi": "^17.12.3",
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "passport-http": "^0.3.0",
+    "passport-http-bearer": "^1.0.1",
+    "passport-jwt": "^4.0.1",
     "uuid": "^9.0.1"
   }
 }
-

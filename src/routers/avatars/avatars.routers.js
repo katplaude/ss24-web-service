@@ -1,64 +1,21 @@
-const  express = require('express')
-const path = require('path');
-const  {fileURLToPath}  =require('url');
-const fs = require("fs");
+import {isChild, isParent} from "../../roles.js";
+import avatarSchema from "./avatar.schema.js";
+import {v4 as uuid} from "uuid";
+import fs from "fs";
+import {Router} from 'express';
+import path from "path";
+import passport from "passport";
 
-const {v4: uuid} = require('uuid');
-const avatarSchema = require("./routers/avatars/avatar.schema.js");
-const passport = require("passport");
-const {BasicStrategy}= require("passport-http");
-const bcrypt = require("bcrypt");
-const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
-const{isParent, isChild} = require('roles.js');
-
-const module_dir = import.meta.url ? path.dirname(fileURLToPath(import.meta.url)) : __dirname;
-
-// create the data file in current working directory (cwd) if it does not yet exist
 const data_file = path.join(process.cwd(), 'avatars.json');
 if (!fs.existsSync(data_file)) {
     fs.writeFileSync(data_file, JSON.stringify([]))
 }
 
-const user_file = path.join(process.cwd(), 'users.json');
-if (!fs.existsSync(user_file)) {
-    fs.writeFileSync(user_file, JSON.stringify([]))
-}
+const avatarsRouter = Router()
 
+avatarsRouter.use(passport.authenticate('jwt', { session: false }))
 
-const app = express()
-
-passport.use(new BasicStrategy(
-    async function(userid, password, done) {
-        try {
-            const users = JSON.parse(fs.readFileSync(user_file, 'utf8'))
-            const user = users.find(user => user.userName === userid);
-            if (user) {
-                const isCorrect = await bcrypt.compare(password, user.password);
-                if(isCorrect) {
-                    done(null, user);
-                } else {
-                    done(null, false);
-                }
-            } else {
-                done(null, false);
-            }
-        } catch (err) {
-            done(err);
-        }
-    }
-));
-
-
-app.use(express.static(path.join(module_dir, 'public')))
-app.use(express.json())
-app.use(passport.authenticate('basic', {session: false}));
-
-app.get('/', function (req, res) {
-    res.sendFile(`index.html`)
-})
-
-app.post('/api/avatars',
+avatarsRouter.post('/api/avatars',
     isParent,
     (req, res) => {
         console.log(" POST /api/avatars")
@@ -86,7 +43,7 @@ app.post('/api/avatars',
         }
     })
 
-app.get(
+avatarsRouter.get(
     "/api/avatars",
     isChild,
     (req, res) => {
@@ -95,7 +52,7 @@ app.get(
         res.send(avatarsArray)
     })
 
-app.get("/api/avatars/:id",
+avatarsRouter.get("/api/avatars/:id",
     isChild,
     (req, res) => {
         const avatarID = req.params.id;
@@ -108,7 +65,7 @@ app.get("/api/avatars/:id",
             res.send(avatar)
     })
 
-app.put("/api/avatars/:id",
+avatarsRouter.put("/api/avatars/:id",
     isParent,
     async (req, res) => {
         try {
@@ -145,7 +102,7 @@ app.put("/api/avatars/:id",
         }
     })
 
-app.delete("/api/avatars/:id",
+avatarsRouter.delete("/api/avatars/:id",
     isParent,
     (req, res) => {
         const avatarID = parseInt(req.params.id)
@@ -166,4 +123,4 @@ app.delete("/api/avatars/:id",
 
     })
 
-module.exports = app;
+export default avatarsRouter;
